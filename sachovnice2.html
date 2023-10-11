@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interaktivní šachovnice</title>
+    <style>
+        table {
+            border-collapse: collapse;
+        }
+        td {
+            width: 30px;
+            height: 30px;
+            border: 1px solid black;
+            text-align: center;
+            vertical-align: middle;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        .black {
+            background-color: black;
+            color: white;
+        }
+        .white {
+            background-color: white;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Interaktivní šachovnice</h1>
+    <label for="rows">Počet řádků: </label>
+    <input type="number" id="rows" required>
+    <label for="cols">Počet sloupců: </label>
+    <input type="number" id="cols" required>
+    <button onclick="generateBoard()">Generovat</button>
+    <button onclick="addRow()">Přidat řádek</button>
+    <button onclick="removeRow()">Odebrat řádek</button>
+    <button onclick="addColumn()">Přidat sloupec</button>
+    <button onclick="removeColumn()">Odebrat sloupec</button>
+    <button onclick="calculateSum()">Vypočítat sumu</button>
+    <button onclick="calculateAverage()">Vypočítat průměr</button>
+    <table id="board"></table>
+
+    <script>
+        function generateBoard() {
+            const rows = document.getElementById('rows').value;
+            const cols = document.getElementById('cols').value;
+            const board = document.getElementById('board');
+            board.innerHTML = ''; 
+
+            for (let i = 0; i < rows; i++) {
+                const tr = document.createElement('tr');
+                for (let j = 0; j < cols; j++) {
+                    const td = document.createElement('td');
+                    if ((i + j) % 2 === 0) {
+                        td.className = 'white';
+                    } else {
+                        td.className = 'black';
+                    }
+                    td.onclick = function() {
+                        editCell(td);
+                    };
+                    tr.appendChild(td);
+                }
+                board.appendChild(tr);
+            }
+        }
+
+        function editCell(cell) {
+            const newText = prompt("Zadejte text do buňky:", cell.innerText);
+            if (newText !== null && isValidInput(newText)) {
+                cell.innerText = newText;
+            } else {
+                alert("Neplatný vstup.");
+            }
+        }
+
+        function isValidInput(text) {
+            const regex = /^[a-zA-Z0-9\s]+$/;
+            return regex.test(text) && text.trim() !== "";
+        }
+
+        function addRow() {
+            const board = document.getElementById('board');
+            const cols = board.rows[0].cells.length;
+            const tr = document.createElement('tr');
+            for (let j = 0; j < cols; j++) {
+                const td = document.createElement('td');
+                td.onclick = function() {
+                    editCell(td);
+                };
+                tr.appendChild(td);
+            }
+            board.appendChild(tr);
+        }
+
+        function removeRow() {
+            const board = document.getElementById('board');
+            if (board.rows.length > 1) {
+                board.deleteRow(-1); 
+            }
+        }
+
+        function addColumn() {
+            const board = document.getElementById('board');
+            for (let i = 0; i < board.rows.length; i++) {
+                const td = document.createElement('td');
+                td.onclick = function() {
+                    editCell(td);
+                };
+                board.rows[i].appendChild(td);
+            }
+        }
+
+        function removeColumn() {
+            const board = document.getElementById('board');
+            if (board.rows[0].cells.length > 1) {
+                for (let i = 0; i < board.rows.length; i++) {
+                    board.rows[i].deleteCell(-1); 
+                }
+            }
+        }
+
+        function calculateSum() {
+            const board = document.getElementById('board');
+            let sum = 0;
+            for (let i = 0; i < board.rows.length; i++) {
+                for (let j = 0; j < board.rows[i].cells.length; j++) {
+                    const cellValue = parseFloat(board.rows[i].cells[j].innerText);
+                    if (!isNaN(cellValue)) {
+                        sum += cellValue;
+                    }
+                }
+            }
+            alert("Celkový součet všech číselných hodnot v tabulce je: " + sum);
+        }
+
+        function calculateAverage() {
+            const board = document.getElementById('board');
+            let sum = 0;
+            let count = 0;
+            for (let i = 0; i < board.rows.length; i++) {
+                for (let j = 0; j < board.rows[i].cells.length; j++) {
+                    const cellValue = parseFloat(board.rows[i].cells[j].innerText);
+                    if (!isNaN(cellValue)) {
+                        sum += cellValue;
+                        count++;
+                    }
+                }
+            }
+            const average = sum / count;
+            alert("Průměr všech číselných hodnot v tabulce je: " + average.toFixed(2));
+        }
+    </script>
+</body>
+</html>
